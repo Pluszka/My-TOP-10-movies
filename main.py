@@ -39,7 +39,8 @@ class Movie(db.Model):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    movieList = db.session.query(Movie).all()
+    return render_template("index.html", top10=movieList)
 
 
 if __name__ == '__main__':
