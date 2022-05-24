@@ -23,6 +23,13 @@ class Movie(db.Model):
     review = db.Column(db.String(250), unique=True, nullable=True)
     img_url = db.Column(db.String(250), unique=True, nullable=False)
 
+
+class editRating(FlaskForm):
+    rating = StringField('New rating', validators=[DataRequired()])
+    review = StringField('Your review', validators=[DataRequired()])
+    submit = SubmitField()
+
+
 #db.create_all()
 
 # new = Movie(
@@ -42,6 +49,18 @@ def home():
     movieList = db.session.query(Movie).all()
     return render_template("index.html", top10=movieList)
 
+
+@app.route("/edit", methods=['POST', 'GET'])
+def edit():
+    reviewform = editRating()
+    movieid = request.args.get("id")
+    movie = Movie.query.get(movieid)
+    if reviewform.validate_on_submit():
+        movie.rating = float(reviewform.rating.data)
+        movie.review = reviewform.review.data
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template("edit.html", form=reviewform, id=movie)
 
 if __name__ == '__main__':
     app.run(debug=True)
