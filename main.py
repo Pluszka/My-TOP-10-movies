@@ -5,7 +5,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import requests
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///FilmList.db'
@@ -29,6 +32,10 @@ class editRating(FlaskForm):
     review = StringField('Your review', validators=[DataRequired()])
     submit = SubmitField()
 
+
+class newTitle(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    submit = SubmitField('Add Movie')
 
 #db.create_all()
 
@@ -70,6 +77,18 @@ def delete():
     db.session.delete(movie)
     db.session.commit()
     return redirect(url_for('home'))
+
+@app.route('/new', methods=["GET", "POST"])
+def new_movie():
+    titleForm = newTitle()
+
+    if titleForm.validate_on_submit():
+        response = requests.get(f"https://api.themoviedb.org/3/search/movie",
+                               params={"api_key": os.environ.get('KEY'), "query": titleForm.title.data})
+        apiMovies = response.json()["results"]
+        return render_template("select.html", options=apiMovies)
+
+    return render_template('add.html', form=titleForm)
 
 if __name__ == '__main__':
     app.run(debug=True)

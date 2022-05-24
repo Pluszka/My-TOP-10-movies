@@ -16,6 +16,12 @@
   <p>
     <a href="#"> MOVIE TITLE - MOVIE RELEASE DATE</a>
   </p>
+  {% for movie in options %}
 
+  <p>
+    <a href="#">{{movie.title}} - {{movie.release_date}}</a>
+  </p>
+
+  {% endfor %}
 </div>
 {% endblock %}
