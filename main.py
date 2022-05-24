@@ -90,5 +90,23 @@ def new_movie():
 
     return render_template('add.html', form=titleForm)
 
+@app.route('/movieselected')
+def find():
+    selected = request.args.get("selectedMovie")
+    if selected:
+        response = requests.get(f'https://api.themoviedb.org/3/movie/{selected}', params={'api_key': os.environ.get('KEY')})
+        data = response.json()
+        print(data)
+        new = Movie(
+                title=data['title'],
+                year=data["release_date"].split("-")[0],
+                img_url=f"https://image.tmdb.org/t/p/w500{data['poster_path']}",
+                description=data["overview"]
+            )
+        db.session.add(new)
+        db.session.commit()
+        return redirect(url_for("home"))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
