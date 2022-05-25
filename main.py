@@ -53,7 +53,9 @@ class newTitle(FlaskForm):
 
 @app.route("/")
 def home():
-    movieList = db.session.query(Movie).all()
+    movieList = db.session.query(Movie).order_by(Movie.rating.desc()).all()
+    for num, movie in enumerate(movieList):
+        movie.ranking = num+1
     return render_template("index.html", top10=movieList)
 
 

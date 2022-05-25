@@ -20,5 +20,11 @@
   </p>
 
   {% endfor %}
+  {% if options|length ==0 %}
+  <h2>No movies found</h2>
+  {% endif %}
+  <h4>
+    <a href="{{ url_for('home') }}">Return to home page</a>
+  </h4>
 </div>
 {% endblock %}
